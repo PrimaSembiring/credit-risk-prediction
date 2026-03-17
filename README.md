@@ -25,7 +25,6 @@ Dataset ini menggunakan variabel target berupa *default payment*, yaitu:
 
 Untuk melakukan prediksi, dataset ini terdiri dari 23 variabel yang merepresentasikan karakteristik nasabah dan perilaku keuangannya.
 
----
 
 ### Informasi Umum Nasabah
 - `LIMIT_BAL` → jumlah batas kredit yang diberikan (termasuk kredit individu dan tambahan keluarga)  
@@ -41,13 +40,13 @@ Untuk melakukan prediksi, dataset ini terdiri dari 23 variabel yang merepresenta
   - 3 = lainnya  
 - `AGE` → usia nasabah  
 
----
 
 ### Riwayat Pembayaran (PAY_X)
 - `PAY_0` sampai `PAY_6` → status pembayaran dalam 6 bulan terakhir  
 
 Skala keterlambatan:
-- `-1` = pembayaran tepat waktu  
+
+- `-2`, `-1`, `0` = pembayaran tepat waktu  
 - `1` = telat 1 bulan  
 - `2` = telat 2 bulan  
 - ...  
@@ -55,27 +54,12 @@ Skala keterlambatan:
 
 Variabel ini sangat penting karena menggambarkan perilaku pembayaran nasabah.
 
----
 
-### 💸 Tagihan Bulanan (BILL_AMT_X)
+### Tagihan Bulanan (BILL_AMT_X)
 - `BILL_AMT1` – `BILL_AMT6` → jumlah tagihan kartu kredit setiap bulan  
 
 Menunjukkan total penggunaan kredit oleh nasabah dalam periode tertentu.
 
----
 
-### 💰 Pembayaran (PAY_AMT_X)
+### Pembayaran (PAY_AMT_X)
 - `PAY_AMT1` – `PAY_AMT6` → jumlah pembayaran yang dilakukan setiap bulan  
-
-Digunakan untuk melihat kemampuan dan kebiasaan nasabah dalam melunasi tagihan.
-
----
-
-## 🧠 Ringkasan
-Secara umum, dataset ini menggabungkan:
-- profil nasabah  
-- kapasitas kredit  
-- riwayat keterlambatan pembayaran  
-- perilaku penggunaan dan pembayaran kredit  
-
-Sehingga sangat relevan untuk analisis risiko dan prediksi default menggunakan metode machine learning maupun deep learning.
