@@ -1,0 +1,86 @@
+1. Informasi Dasar Nasabah
+| Variabel  | Keterangan                                        |
+| --------- | ------------------------------------------------- |
+| LIMIT_BAL | Jumlah limit kredit yang diberikan kepada nasabah |
+| SEX       | Jenis kelamin nasabah                             |
+| EDUCATION | Tingkat pendidikan nasabah                        |
+| MARRIAGE  | Status pernikahan nasabah                         |
+| AGE       | Usia nasabah                                      |
+
+
+2. Status Pembayaran (Payment History)
+Variabel ini menunjukkan riwayat keterlambatan pembayaran nasabah dalam 6 bulan terakhir
+
+| Variabel | Keterangan                               |
+| -------- | ---------------------------------------- |
+| PAY_0    | Status pembayaran bulan terakhir         |
+| PAY_2    | Status pembayaran dua bulan sebelumnya   |
+| PAY_3    | Status pembayaran tiga bulan sebelumnya  |
+| PAY_4    | Status pembayaran empat bulan sebelumnya |
+| PAY_5    | Status pembayaran lima bulan sebelumnya  |
+| PAY_6    | Status pembayaran enam bulan sebelumnya  |
+
+
+3. Jumlah Tagihan (Bill Statement)
+Variabel ini menunjukkan jumlah tagihan kartu kredit pada setiap bulan selama enam bulan terakhir.
+
+| Variabel  | Keterangan                            |
+| --------- | ------------------------------------- |
+| BILL_AMT1 | Jumlah tagihan bulan terakhir         |
+| BILL_AMT2 | Jumlah tagihan dua bulan sebelumnya   |
+| BILL_AMT3 | Jumlah tagihan tiga bulan sebelumnya  |
+| BILL_AMT4 | Jumlah tagihan empat bulan sebelumnya |
+| BILL_AMT5 | Jumlah tagihan lima bulan sebelumnya  |
+| BILL_AMT6 | Jumlah tagihan enam bulan sebelumnya  |
+
+
+4. Jumlah Pembayaran (Previous Payment)
+Variabel ini menunjukkan jumlah pembayaran yang dilakukan nasabah pada setiap bulan.
+
+| Variabel | Keterangan                               |
+| -------- | ---------------------------------------- |
+| PAY_AMT1 | Jumlah pembayaran bulan terakhir         |
+| PAY_AMT2 | Jumlah pembayaran dua bulan sebelumnya   |
+| PAY_AMT3 | Jumlah pembayaran tiga bulan sebelumnya  |
+| PAY_AMT4 | Jumlah pembayaran empat bulan sebelumnya |
+| PAY_AMT5 | Jumlah pembayaran lima bulan sebelumnya  |
+| PAY_AMT6 | Jumlah pembayaran enam bulan sebelumnya  |
+
+
+------------------------------------------------------------------------------------
+1. Variabel SEX
+| Nilai | Keterangan |
+| ----- | ---------- |
+| **1** | Pria       |
+| **2** | Wanita     |
+
+2. Variabel EDUCATION
+| Nilai | Keterangan              |
+| ----- | ----------------------- |
+| **1** | Graduate School (S2/S3) |
+| **2** | University (Sarjana)    |
+| **3** | High School             |
+| **4** | Others                  |
+
+3. Variabel MARRIAGE
+| Nilai | Keterangan    |
+| ----- | ------------- |
+| **1** | Menikah       |
+| **2** | Belum menikah |
+| **3** | Lainnya       |
+
+4. Variabel Status Pembayaran (PAY_0 – PAY_6)
+| Nilai  | Keterangan                         |
+| ------ | ---------------------------------- |
+| **-2** | Tidak ada penggunaan kredit        |
+| **-1** | Pembayaran tepat waktu             |
+| **0**  | Membayar tepat pada bulan tersebut |
+| **1**  | Terlambat 1 bulan                  |
+| **2**  | Terlambat 2 bulan                  |
+| **3**  | Terlambat 3 bulan                  |
+| **4**  | Terlambat 4 bulan                  |
+| **5**  | Terlambat 5 bulan                  |
+| **6**  | Terlambat 6 bulan                  |
+| **7**  | Terlambat 7 bulan                  |
+| **8**  | Terlambat 8 bulan                  |
+| **9**  | Terlambat 9 bulan atau lebih       |
