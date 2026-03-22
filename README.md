@@ -6,7 +6,40 @@ Melalui exploratory data analysis (EDA), dilakukan identifikasi pola dan variabe
 
 ---
 
-## 📚 Sumber Dataset
+## � Deployment dengan Streamlit
+
+Model telah di-deploy menggunakan Streamlit untuk antarmuka web yang mudah digunakan.
+
+### Persyaratan Sistem
+- Python 3.8+
+- PyTorch
+- Streamlit
+- scikit-learn
+- pandas
+- numpy
+
+### Instalasi Dependencies
+```bash
+pip install streamlit torch scikit-learn pandas numpy imbalanced-learn joblib
+```
+
+### Menjalankan Aplikasi
+1. Pastikan file `best_model.pth` dan `default of credit card clients.csv` ada di direktori yang sama.
+2. Jalankan perintah berikut:
+```bash
+streamlit run app.py
+```
+3. Buka browser dan akses `http://localhost:8501`
+
+### Fitur Aplikasi
+- **Input Form**: Masukkan data nasabah termasuk limit kredit, demografi, riwayat pembayaran, dan jumlah tagihan/pembayaran.
+- **Prediksi Real-time**: Model akan memprediksi probabilitas default secara instan.
+- **Risk Assessment**: Menampilkan level risiko (Very Low, Low, Medium, High, Very High) berdasarkan probabilitas.
+- **Input Summary**: Ringkasan data yang dimasukkan untuk verifikasi.
+
+---
+
+## �📚 Sumber Dataset
 
 Dataset yang digunakan dalam project ini adalah **Default of Credit Card Clients** yang diperoleh dari UCI Machine Learning Repository.
 
