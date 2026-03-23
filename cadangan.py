@@ -3,80 +3,94 @@ import pandas as pd
 import numpy as np
 import torch
 import torch.nn as nn
+from sklearn.preprocessing import StandardScaler
 import joblib
 import os
 
 # Set page config
 st.set_page_config(
     page_title="Credit Card Default Prediction",
+    page_icon="💳",
     layout="wide"
 )
 
 # Title
-st.title("Credit Card Default Prediction")
+st.title("💳 Credit Card Default Prediction")
 st.markdown("---")
 
-# Load scaler
+# Load data and create scaler
 @st.cache_resource
 def load_scaler_and_model():
-    scaler = joblib.load('scaler.pkl')
+    # Load data
+    df = pd.read_csv('default of credit card clients.csv')
+    df.rename(columns={'default payment next month': 'DEFAULT'}, inplace=True)
+    df.drop(columns=['ID'], inplace=True)
 
-    feature_names = [
-    'LIMIT_BAL','SEX','EDUCATION','MARRIAGE','AGE',
-    'PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6',
-    'BILL_AMT1','BILL_AMT2','BILL_AMT3','BILL_AMT4','BILL_AMT5','BILL_AMT6',
-    'PAY_AMT1','PAY_AMT2','PAY_AMT3','PAY_AMT4','PAY_AMT5','PAY_AMT6',
-    'PAY_MEAN','bill_total','pay_total','PAY_RATIO'
-]
+    # Feature Engineering
+    df_fe = df.copy()
+    for i in range(1, 7):
+        df_fe[f'UTIL_{i}'] = df_fe[f'BILL_AMT{i}'] / (df_fe['LIMIT_BAL'] + 1)
+    for i in range(1, 7):
+        df_fe[f'PAY_RATIO_{i}'] = df_fe[f'PAY_AMT{i}'] / (df_fe[f'BILL_AMT{i}'].abs() + 1)
+    pay_status_cols = ['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']
+    df_fe['TOTAL_DELAY_COUNT'] = (df_fe[pay_status_cols] > 0).sum(axis=1)
+    df_fe['MAX_DELAY'] = df_fe[pay_status_cols].max(axis=1)
+    df_fe['AVG_DELAY'] = df_fe[pay_status_cols].mean(axis=1)
+    df_fe['BILL_TREND'] = df_fe['BILL_AMT1'] - df_fe['BILL_AMT6']
+    df_fe['PAY_AMT_TREND'] = df_fe['PAY_AMT1'] - df_fe['PAY_AMT6']
+    bill_cols = ['BILL_AMT1','BILL_AMT2','BILL_AMT3','BILL_AMT4','BILL_AMT5','BILL_AMT6']
+    pay_amt_cols = ['PAY_AMT1','PAY_AMT2','PAY_AMT3','PAY_AMT4','PAY_AMT5','PAY_AMT6']
+    df_fe['AVG_BILL'] = df_fe[bill_cols].mean(axis=1)
+    df_fe['AVG_PAY_AMT'] = df_fe[pay_amt_cols].mean(axis=1)
+
+    X = df_fe.drop(columns=['DEFAULT']).iloc[:, :27]  # Match saved model features
+
+    # Scaler
+    scaler = StandardScaler()
+    scaler.fit(X)
+
     # Model
-    class CreditModel(nn.Module):
-        def __init__(self, input_dim):
+    class CreditDefaultNet(nn.Module):
+        def __init__(self, input_dim: int):
             super().__init__()
             self.network = nn.Sequential(
-                # Blok pertama
                 nn.Linear(input_dim, 256),
-                nn.BatchNorm1d(256), # menormalisas agar model stabil dan cepat 
-                nn.LeakyReLU(0.1), # utk pola non linear / gradienya tetap ada 
-                nn.Dropout(0.4),
-
-                # blok kedua
+                nn.BatchNorm1d(256),
+                nn.ReLU(),
+                nn.Dropout(0.35),
                 nn.Linear(256, 128),
                 nn.BatchNorm1d(128),
-                nn.LeakyReLU(0.1),
-                nn.Dropout(0.3),
-
-                # blok ketiga
+                nn.ReLU(),
+                nn.Dropout(0.30),
                 nn.Linear(128, 64),
                 nn.BatchNorm1d(64),
-                nn.LeakyReLU(0.1),
-                nn.Dropout(0.2),
-
-                # blok keempat 
+                nn.ReLU(),
+                nn.Dropout(0.25),
                 nn.Linear(64, 32),
                 nn.BatchNorm1d(32),
-                nn.LeakyReLU(),
-
-                # output layer
+                nn.ReLU(),
+                nn.Dropout(0.20),
                 nn.Linear(32, 1),
-                # nn.Sigmoid()
+                nn.Sigmoid()
             )
 
-        def forward(self, x):
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
             return self.network(x).squeeze(1)
 
     input_dim = 27  # Match saved model
-    model = CreditModel(input_dim)
+    model = CreditDefaultNet(input_dim)
 
     # Load weights if exists
-    if os.path.exists('best_model.pth'): # load parameter
+    if os.path.exists('best_model.pth'):
         state_dict = torch.load('best_model.pth', map_location=torch.device('cpu'))
-        model.load_state_dict(state_dict, strict=True) # load harus sesuai 100%
+        model.load_state_dict(state_dict, strict=False)
         st.success("Model loaded successfully!")
     else:
         st.error("Model file 'best_model.pth' not found!")
 
     model.eval()
-    return scaler, model, feature_names
+
+    return scaler, model, X.columns.tolist()
 
 scaler, model, feature_names = load_scaler_and_model()
 
@@ -129,7 +143,7 @@ with col9:
     pay_amt6 = st.number_input("PAY_AMT6 (Apr)", value=0)
 
 # Predict button
-if st.button("Predict Default Risk", type="primary"):
+if st.button("🔮 Predict Default Risk", type="primary"):
     # Create input data
     input_data = {
         'LIMIT_BAL': limit_bal,
@@ -160,17 +174,24 @@ if st.button("Predict Default Risk", type="primary"):
     # Convert to DataFrame
     input_df = pd.DataFrame([input_data])
 
-    pay_cols = ['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']
+    # Feature Engineering
+    for i in range(1, 7):
+        input_df[f'UTIL_{i}'] = input_df[f'BILL_AMT{i}'] / (input_df['LIMIT_BAL'] + 1)
+    for i in range(1, 7):
+        input_df[f'PAY_RATIO_{i}'] = input_df[f'PAY_AMT{i}'] / (input_df[f'BILL_AMT{i}'].abs() + 1)
+    pay_status_cols = ['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']
+    input_df['TOTAL_DELAY_COUNT'] = (input_df[pay_status_cols] > 0).sum(axis=1)
+    input_df['MAX_DELAY'] = input_df[pay_status_cols].max(axis=1)
+    input_df['AVG_DELAY'] = input_df[pay_status_cols].mean(axis=1)
+    input_df['BILL_TREND'] = input_df['BILL_AMT1'] - input_df['BILL_AMT6']
+    input_df['PAY_AMT_TREND'] = input_df['PAY_AMT1'] - input_df['PAY_AMT6']
     bill_cols = ['BILL_AMT1','BILL_AMT2','BILL_AMT3','BILL_AMT4','BILL_AMT5','BILL_AMT6']
     pay_amt_cols = ['PAY_AMT1','PAY_AMT2','PAY_AMT3','PAY_AMT4','PAY_AMT5','PAY_AMT6']
-
-    input_df['PAY_MEAN'] = input_df[pay_cols].mean(axis=1)
-    input_df['bill_total'] = input_df[bill_cols].sum(axis=1)
-    input_df['pay_total'] = input_df[pay_amt_cols].sum(axis=1)
-    input_df['PAY_RATIO'] = input_df['pay_total'] / (input_df['bill_total'] + 1)
+    input_df['AVG_BILL'] = input_df[bill_cols].mean(axis=1)
+    input_df['AVG_PAY_AMT'] = input_df[pay_amt_cols].mean(axis=1)
 
     # Ensure order matches training
-    input_df = input_df[feature_names]  # Match 27 features
+    input_df = input_df[feature_names[:27]]  # Match 27 features
 
     # Scale
     input_scaled = scaler.transform(input_df)
@@ -178,10 +199,10 @@ if st.button("Predict Default Risk", type="primary"):
     # Predict
     with torch.no_grad():
         input_tensor = torch.FloatTensor(input_scaled)
-        prob = torch.sigmoid(model(input_tensor)).item()
+        prob = model(input_tensor).item()
 
     # Display result
-    st.header("Prediction Result")
+    st.header("🎯 Prediction Result")
     col_result1, col_result2 = st.columns(2)
 
     with col_result1:

@@ -6,7 +6,7 @@ Melalui exploratory data analysis (EDA), dilakukan identifikasi pola dan variabe
 
 ---
 
-## � Deployment dengan Streamlit
+## Deployment dengan Streamlit
 
 Model telah di-deploy menggunakan Streamlit untuk antarmuka web yang mudah digunakan.
 
@@ -39,7 +39,7 @@ streamlit run app.py
 
 ---
 
-## �📚 Sumber Dataset
+## Sumber Dataset
 
 Dataset yang digunakan dalam project ini adalah **Default of Credit Card Clients** yang diperoleh dari UCI Machine Learning Repository.
 
