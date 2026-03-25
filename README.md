@@ -95,4 +95,15 @@ Menunjukkan total penggunaan kredit oleh nasabah dalam periode tertentu.
 
 
 ### Pembayaran (PAY_AMT_X)
-- `PAY_AMT1` – `PAY_AMT6` → jumlah pembayaran yang dilakukan setiap bulan  
+- `PAY_AMT1` – `PAY_AMT6` → jumlah pembayaran yang dilakukan setiap bulan
+
+---
+
+## Tampilan Aplikasi
+
+### Input Data
+![Input Form](assets/input-form.png)
+
+### Hasil Prediksi
+![Hasil Prediksi](assets/hasil-prediksi.png)
+
